@@ -32,7 +32,7 @@ export const getEmployeeById = async (req, res) => {
 export const deleteEmployeeById = async (req, res) => {
   try {
     const [result] = await pool.query("DELETE FROM empleados WHERE id = ?", [req.params.id])
-    if (result.length === 0) {
+    if (result.affectedRows === 0) {
       res.send({ response: "Empleado no encontrado" })
     } else {
       res.send({ response: "Empleado eliminado correctamente" });
@@ -44,7 +44,7 @@ export const deleteEmployeeById = async (req, res) => {
 
 //Editar empleado
 export const editEmployeeById = async (req, res) => {
-  if (req.body.name && req.body.salary) {
+  if (req.body.name && req.body.salary && !isNaN(+req.body.salary)) {
     try {
       const [result] = await pool.query("UPDATE empleados SET nombre_completo = ?, sueldo = ? WHERE id = ?", [req.body.name, req.body.salary, req.params.id])
       if (result.affectedRows === 0) {
@@ -57,15 +57,20 @@ export const editEmployeeById = async (req, res) => {
     }
   } else {
     if (!req.body.name) {
-      res.send({ response: "Falta el nombre" });
+      res.status(400).send({ response: "Falta el nombre" });
     } else if (!req.body.salary) {
-      res.send({ response: "Falta el salario" });
+      res.status(400).send({ response: "Falta el salario" });
+    } else if (isNaN(+req.body.salary)) {
+      res.status(400).send({ response: "El sueldo debe ser un número válido" });
     }
   }
 }
 
 //Editar un atributo de un empleado
 export const patchEmployee = async (req, res) => {
+  if (req.body.salary && isNaN((+req.body.salary))) {
+    return res.status(400).send({ response: "El sueldo debe ser un número válido" });
+  }
   try {
     const [result] = await pool.query("UPDATE empleados SET nombre_completo = IFNULL(?, nombre_completo), sueldo = IFNULL(?, sueldo) WHERE id = ?", [req.body.name, req.body.salary, req.params.id])
     if (result.affectedRows === 0) {
@@ -80,7 +85,7 @@ export const patchEmployee = async (req, res) => {
 
 //Crear empleado
 export const createEmployee = async (req, res) => {
-  if (req.body.name && req.body.salary) {
+  if (req.body.name && req.body.salary && !isNaN(+req.body.salary)) {
     try {
       const result = await pool.query("INSERT INTO empleados (nombre_completo, sueldo) VALUES (?, ?)", [req.body.name, req.body.salary])
       if (result.affectedRows === 0) {
@@ -93,9 +98,11 @@ export const createEmployee = async (req, res) => {
     }
   } else {
     if (!req.body.name) {
-      res.send({ response: "Falta el nombre" });
+      res.status(400).send({ response: "Falta el nombre" });
     } else if (!req.body.salary) {
-      res.send({ response: "Falta el salario" });
+      res.status(400).send({ response: "Falta el salario" });
+    } else if (isNaN(+req.body.salary)) {
+      res.status(400).send({ response: "El sueldo debe ser un número válido" });
     }
   }
 }
