@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getEmployeeById, getEmployees } from "../controllers/employees.controllers.js";
+import { createEmployee, deleteEmployeeById, editEmployeeById, getEmployeeById, getEmployees, patchEmployee } from "../controllers/employees.controllers.js";
 
 
 const baseUrl = "/api/employees";
@@ -9,12 +9,12 @@ router.get(baseUrl, getEmployees)
 
 router.get(`${baseUrl}/:id`, getEmployeeById)
 
-router.delete(`${baseUrl}/delete/:id`, getEmployeeById)
+router.delete(`${baseUrl}/delete/:id`, deleteEmployeeById)
 
-router.put(`${baseUrl}/edit/:id`, getEmployeeById)
+router.put(`${baseUrl}/edit/:id`, editEmployeeById)
 
-router.patch(`${baseUrl}/:id`, getEmployeeById)
+router.patch(`${baseUrl}/:id`, patchEmployee)
 
-router.post(`${baseUrl}/create`, getEmployeeById)
+router.post(`${baseUrl}/create`, createEmployee)
 
 export default router;
